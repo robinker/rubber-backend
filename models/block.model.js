@@ -3,6 +3,11 @@ const Schema = mongoose.Schema;
 
 const blockSchema = new Schema({
     
+    holders: {
+        type: [String],
+        required: true
+    },
+
     lastState: {
         type: String,
         required: true

@@ -25,14 +25,15 @@ router.route('/add').post((req, res) => {
                 .then(() => {
                     Transaction.findOne({rubberType, destination: req.body.source})
                         .then(transaction => {
-                            console.log(transaction)
+                            // console.log(transaction)
                             if(transaction != null) {
                                 // console.log('Update Block ', rubberType)
                                 // console.log(transaction.source, ' -> ', transaction.destination)
                                 Block.find({lastState: transaction.destination, rubberType})
                                 .then(blocks => {
-                                    console.log(blocks)
+                                    // console.log(blocks)
                                     blocks.map(obj => {
+                                        obj.holders.push(newTransaction.destination)
                                         obj.chain.push(newTransaction)
                                         obj.lastState = newTransaction.destination
                                         obj.save()
@@ -41,8 +42,15 @@ router.route('/add').post((req, res) => {
                             } else {
                                 // console.log('new Block')
                                 let chain = []
+                                let holders = []
                                 chain.push(newTransaction)
-                                const newBlock = new Block({lastState, rubberType, chain})
+                                if(!holders.includes(newTransaction.source)){
+                                    holders.push(newTransaction.source)
+                                }
+                                if(!holders.includes(newTransaction.destination)){
+                                    holders.push(newTransaction.destination)
+                                }
+                                const newBlock = new Block({lastState, rubberType, chain, holders})
                                 newBlock.save()
                             }
                             res.json('Transaction added!')
@@ -61,18 +69,14 @@ router.route('/').get((req, res) => {
                 .catch(err => res.status(400).json('Error: ' + err))
 })
 
-router.route('/source/:firstname/:lastname').get((req, res) => {
-    const source = req.params.firstname + ' ' + req.params.lastname
-    Block.find({chain: {$elemMatch: {source}}})
-        .then(blocks => { res.json(blocks) })
+router.route('/transactions/:firstname/:lastname').get((req, res) => {
+    const fullname = req.params.firstname + ' ' + req.params.lastname
+    Block.find({holders: fullname})
+        .then(blocks => { 
+            res.json(blocks) 
+        
+        })
         .catch(err => res.status(400).json('Error: ' + err))
-})
-
-router.route('/destination/:firstname/:lastname').get((req, res) => {
-    const destination = req.params.firstname + ' ' + req.params.lastname
-    Transaction.find({destination})
-                .then(transactions => res.json(transactions))
-                .catch(err => res.status(400).json('Error: ' + err))
 })
 
 module.exports = router;
