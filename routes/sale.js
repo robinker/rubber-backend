@@ -1,5 +1,4 @@
 const router = require('express').Router();
-var mongoose = require('mongoose');
 let User = require('../models/user.model');
 let Transaction = require('../models/transaction.model');
 let Block = require('../models/block.model');

@@ -68,5 +68,33 @@ router.route('/login').post((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
+// add friend
+router.route('/addFriend/:id').post(async (req, res) => {
+    try{
+        const friend = await User.findOne({username: req.body.username})
+        const user = await User.findById(req.params.id)
+        const friendName = friend.firstname + " " + friend.lastname
+        if(!user.friendlist.includes(friendName)){
+            user.friendlist.push(friendName)
+            user.save()
+            res.json({message: "Friend Added", friends: user.friendlist})
+        } else {
+            res.json('Dupe')
+        }
+    }
+    catch (error) {
+        res.status(400).json('Error: ' + error)
+    }
+    
+})
+
+//get friend list
+router.route('/getFriends/:id').get((req, res) => {
+    User.findById(req.params.id)
+    .then(user => {
+        res.json(user.friendlist)
+    })
+})
+
 
 module.exports = router;

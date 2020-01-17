@@ -59,10 +59,9 @@ const userSchema = new Schema({
     //     required: true,
     // }
 
-    // transactions: {
-    //     type: [Schema.Types.ObjectId],
-    //     ref: 'Transaction'
-    // }
+    friendlist: {
+        type: [String]
+    }
 
 }, {
     timestamps: true,
