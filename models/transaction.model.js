@@ -4,7 +4,9 @@ const Schema = mongoose.Schema;
 const transactionSchema = new Schema({
     
     source: {
-        type: String,
+        name: String,
+        certification: String,
+        type: Object,
         required: true,
     },
     
@@ -24,7 +26,9 @@ const transactionSchema = new Schema({
     },
     
     destination: {
-        type: String,
+        name: String,
+        certification: String,
+        type: Object,
         required: true,
     },
 

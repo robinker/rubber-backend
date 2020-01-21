@@ -15,18 +15,18 @@ const userSchema = new Schema({
     },
 
     role : {
-        type: ['Administrator', 'Gardener', 'Middleman'],
-        default: 'Gardener',
+        type: ['ผู้ดูแลระบบ', 'เกษตรกร', 'พ่อค้าคนกลาง'],
+        default: 'เกษตรกร',
         required: true,
     },
 
-    // citizen_id: {
-    //     type: String,
-    //     require: true,
-    //     unique: true,
-    //     minlength: 13,
-    //     maxlength: 13,
-    // },
+    citizen_id: {
+        type: String,
+        // require: true,
+        unique: true,
+        minlength: 13,
+        maxlength: 13,
+    },
 
     firstname: {
         type: String,
@@ -38,26 +38,24 @@ const userSchema = new Schema({
         required: true,
     },
     
-    // certifitions: {
-    //     cer_1: {
-    //         type: String
-    //     }, 
-    //     cer_2 : {
-    //         type: String
-    //     },
-    //     cer_3 : {
-    //         type: String
-    //     },
-    //     cer_4: {
-    //         type: String
-    //     },
-    // },
+    cert_1: {
+        type: String
+    }, 
+    cert_2 : {
+        type: String
+    },
+    cert_3 : {
+        type: String
+    },
+    cert_4: {
+        type: String
+    },
 
     // gardens: {
     //     type: [mongoose.Schema.Types.ObjectId],
     //     ref: 'Garden',
     //     required: true,
-    // }
+    // },
 
     friendlist: {
         type: [String]

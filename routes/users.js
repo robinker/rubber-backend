@@ -3,25 +3,29 @@ let User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 
 router.route('/').get((req, res) => {
-    User.find({},'username role firstname lastname')
+    User.find({},'username role firstname lastname cert_1')
         .then(users => res.json(users))
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
 router.route('/add').post(async (req, res) => {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = {
-        username: req.body.username,
-        password: hashedPassword,
-        role: req.body.role,
-        firstname: req.body.firstname,
-        lastname: req.body.lastname
-    };
-    const newUser = new User(user);
-
-    newUser.save()
+    if(!User.find({username: req.body.username})){
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const user = {
+            username: req.body.username,
+            password: hashedPassword,
+            role: req.body.role,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            cert_1: req.body.cert_1,
+        };
+        const newUser = new User(user);
+        newUser.save()
         .then(() => res.json('User added!'))
         .catch(err => res.status(400).json('Error: ' + err));
+    } else {
+        res.json('username is invalid')
+    }
 });
 
 // get user
@@ -88,13 +92,12 @@ router.route('/addFriend/:id').post(async (req, res) => {
     
 })
 
-//get friend list
+//get friends
 router.route('/getFriends/:id').get((req, res) => {
     User.findById(req.params.id)
     .then(user => {
         res.json(user.friendlist)
     })
 })
-
 
 module.exports = router;
