@@ -1,14 +1,17 @@
 const router = require('express').Router();
 let User = require('../models/user.model');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
+
+require('dotenv').config();
 
 router.route('/').get((req, res) => {
-    User.find({},'username role firstname lastname cert_1')
+    User.find({},'username role firstname lastname cert_1 friendlist')
         .then(users => res.json(users))
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/add').post(async (req, res) => {
+router.route('/add').post(authToken, async (req, res) => {
     if(!User.find({username: req.body.username})){
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const user = {
@@ -60,11 +63,16 @@ router.route('/update/:id').post((req, res) => {
 });
 
 // login
-router.route('/login').post((req, res) => {
+router.route('/login').post(async (req, res) => {
     User.findOne({username: req.body.username})
         .then(user => {
             if(bcrypt.compareSync(req.body.password, user.password)){
-                res.json({message:"Logged In", user: user})
+                const token = jwt.sign({username: user.username, role: user.role}, process.env.ACCESS_TOKEN_PRIVATE)
+                const payload = {
+                    ...user._doc,
+                    token
+                }
+                res.json({message:"Logged In", user: payload})
             } else {
                 res.json("Not Allow")
             }
@@ -73,7 +81,7 @@ router.route('/login').post((req, res) => {
 });
 
 // add friend
-router.route('/addFriend/:id').post(async (req, res) => {
+router.route('/addFriend/:id').post(authToken,async (req, res) => {
     try{
         const friend = await User.findOne({username: req.body.username})
         const user = await User.findById(req.params.id)
@@ -93,11 +101,22 @@ router.route('/addFriend/:id').post(async (req, res) => {
 })
 
 //get friends
-router.route('/getFriends/:id').get((req, res) => {
+router.route('/getFriends/:id').get(authToken, (req, res) => {
     User.findById(req.params.id)
     .then(user => {
         res.json(user.friendlist)
     })
 })
+
+function authToken(req, res, next) {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    if(token === null) return res.sendStatus(401)
+    jwt.verify(token, process.env.ACCESS_TOKEN_PRIVATE, (err, payload) => {
+        if(err) return res.status(403).json(err)
+        req.payload = payload
+        next()
+    })
+}
 
 module.exports = router;

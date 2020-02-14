@@ -48,13 +48,9 @@ router.route('/add').post( async(req, res) => {
         .then(() => {
             Transaction.findOne({rubberType, destination: req.body.source.name})
             .then(transaction => {
-                // console.log(transaction)
                 if(transaction != null) {
-                    // console.log('Update Block ', rubberType)
-                    // console.log(transaction.source, ' -> ', transaction.destination)
                     Block.find({lastState: transaction.destination.name, rubberType})
                     .then(blocks => {
-                        // console.log(blocks)
                         blocks.map(obj => {
                             obj.holders.push(newTransaction.destination.name)
                             obj.chain.push(newTransaction)
@@ -63,7 +59,6 @@ router.route('/add').post( async(req, res) => {
                         })
                     })
                 } else {
-                    // console.log('new Block')
                     let chain = []
                     let holders = []
                     chain.push(newTransaction)
