@@ -100,12 +100,27 @@ router.route('/addFriend/:id').post(authToken,async (req, res) => {
     
 })
 
-//get friends
+// get friends
 router.route('/getFriends/:id').get(authToken, (req, res) => {
     User.findById(req.params.id)
     .then(user => {
         res.json(user.friendlist)
     })
+})
+
+// search certification
+router.route('/search').post(async (req, res) => {
+    const cert = req.body.cert
+    try{
+        user = await User.find({cert_1: cert})
+        if(user.length != 0) {
+            res.json('OK')  
+        } else {
+            res.json('NO')
+        }
+    } catch(err) {
+        res.status(400).json('Error: ' + err)
+    }
 })
 
 function authToken(req, res, next) {
