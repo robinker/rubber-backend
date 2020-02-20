@@ -9,56 +9,57 @@ router.route('/add').post( async(req, res) => {
     const firstname2 = req.body.source.name.split(' ')[0]
     const lastname2 = req.body.source.name.split(' ')[1]
     try {
-        let user1 = await User.findOne({firstname: firstname2, lastname: lastname2})
+        // let user1 = await User.findOne({firstname: firstname2, lastname: lastname2})
         let user2 = await User.findOne({firstname, lastname})
         let transaction = {}
-        if(user1.role[0] === 'เกษตรกร') {
+        // if(user1.role[0] === 'เกษตรกร') {
+        //     transaction = {
+        //         source: {
+        //             name: req.body.source.name,
+        //             certification: req.body.source.certification
+        //         },
+        //         rubberType: req.body.rubberType,
+        //         volume: req.body.volume,
+        //         price: req.body.price,
+        //         destination: {
+        //             name: req.body.destination,
+        //             certification: user2.cert_1
+        //         },
+        //     }
+        // } else if(user1.role[0] === 'พ่อค้าคนกลาง') {
             transaction = {
                 source: {
-                    name: req.body.source.name,
-                    certification: req.body.source.certification
+                    name: req.body.destination,
+                    certification: user2.cert_1
                 },
                 rubberType: req.body.rubberType,
                 volume: req.body.volume,
                 price: req.body.price,
                 destination: {
-                    name: req.body.destination,
-                    certification: user2.cert_1
-                },
-            }
-        } else if(user1.role[0] === 'พ่อค้าคนกลาง') {
-            transaction = {
-                source: {
-                    name: req.body.destination,
-                    certification: user2.cert_1
-                },
-                rubberType: req.body.rubberType,
-                volume: req.body.volume,
-                price: req.body.price,
-                destination: {
                     name: req.body.source.name,
                     certification: req.body.source.certification
                 },
             }
-        }
+        // }
         const newTransaction = new Transaction(transaction)
         const lastState = newTransaction.destination.name
         const rubberType = newTransaction.rubberType
         newTransaction.save()
-        .then(() => {
-            Transaction.findOne({rubberType, destination: req.body.source.name})
-            .then(transaction => {
-                if(transaction != null) {
-                    Block.find({lastState: transaction.destination.name, rubberType})
-                    .then(blocks => {
-                        blocks.map(obj => {
-                            obj.holders.push(newTransaction.destination.name)
-                            obj.chain.push(newTransaction)
-                            obj.lastState = newTransaction.destination.name
-                            obj.save()
-                        })
+        .then(() => {   
+            Block.find({lastState: newTransaction.source.name, rubberType})
+            .then(blocks => {
+                console.log(blocks)
+                if(blocks.length != 0) {
+                    // console.log("CHAIN UPDATED")
+                    blocks.map(obj => {
+                        obj.holders.push(newTransaction.destination.name)
+                        obj.chain.push(newTransaction)
+                        obj.lastState = newTransaction.destination.name
+                        obj.save()
                     })
-                } else {
+                }
+                else {
+                    // console.log("NEW CHAIN")
                     let chain = []
                     let holders = []
                     chain.push(newTransaction)
@@ -73,8 +74,8 @@ router.route('/add').post( async(req, res) => {
                     }
                     res.json('Transaction added!')
                 })
-            })
-            .catch(err => res.status(400).json('Error: ' + err))
+        })
+        .catch(err => res.status(400).json('Error: ' + err))
     }  catch {
         res.status(400).json('ไม่มีผู้ใช่นี้ในระบบ')
     }

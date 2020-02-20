@@ -81,7 +81,7 @@ router.route('/login').post(async (req, res) => {
 });
 
 // add friend
-router.route('/addFriend/:id').post(authToken,async (req, res) => {
+router.route('/addFriend/:id').post(authToken, async (req, res) => {
     try{
         const friend = await User.findOne({username: req.body.username})
         const user = await User.findById(req.params.id)
