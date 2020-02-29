@@ -11,20 +11,20 @@ router.route('/').get((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/add').post(authToken, async (req, res) => {
-    if(!User.find({username: req.body.username})){
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const user = {
-            username: req.body.username,
-            password: hashedPassword,
-            role: req.body.role,
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            cert_1: req.body.cert_1,
-        };
-        const newUser = new User(user);
+router.route('/add').post(async (req, res) => {
+    user = await User.findOne({username: req.body.username})
+    if(!user){
+        const hashedPassword = await bcrypt.hash(req.body.payload.password, 10);
+        const data = {
+            ...req.body.payload,
+            password: hashedPassword
+        }
+        const newUser = new User(data);
+        res.json(newUser)
         newUser.save()
-        .then(() => res.json('User added!'))
+        .then(() => {
+            res.json('User added!')
+        })
         .catch(err => res.status(400).json('Error: ' + err));
     } else {
         res.json('username is invalid')

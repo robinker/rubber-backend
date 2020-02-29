@@ -37,6 +37,18 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+
+    email: String,
+
+    address: String,
+    amphure: String,
+    district: String,
+    province: String,
+    zipcode: String,
+
+    tel: String,
+
+    birthdate: Date,
     
     cert_1: {
         type: String
@@ -51,11 +63,7 @@ const userSchema = new Schema({
         type: String
     },
 
-    // gardens: {
-    //     type: [mongoose.Schema.Types.ObjectId],
-    //     ref: 'Garden',
-    //     required: true,
-    // },
+    gardens: mongoose.Types.ObjectId,
 
     friendlist: {
         type: [String]
