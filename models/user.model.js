@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+
 const userSchema = new Schema({
     username: {
         type: String,
@@ -41,7 +42,7 @@ const userSchema = new Schema({
     email: String,
 
     address: String,
-    amphure: String,
+    subdistrict: String,
     district: String,
     province: String,
     zipcode: String,
@@ -63,11 +64,12 @@ const userSchema = new Schema({
         type: String
     },
 
-    gardens: mongoose.Types.ObjectId,
+    gardens: [{
+        type: Schema.Types.ObjectId, 
+        ref: "Garden"
+    }],
 
-    friendlist: {
-        type: [String]
-    }
+    friendlist: [String]
 
 }, {
     timestamps: true,

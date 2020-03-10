@@ -2,34 +2,34 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const gardaenSchema = new Schema({
-    id: {
-        type: Number,
-        unique: true,
-        required: true,
-    },
     
-    rubberType : {
-        enum: String,
-        required: true,
-    },
-
+    
     area: {
         type: Number,
         required: true,
     },
+    startYear: {
+        type: Number,
+        required: true
+    },
+    
+    species : {
+        type: String,
+        required: true,
+    },
 
-    rubberTree: {
+    amount: {
         type: Number,
         required: true,
     },
 
-    // address: {
-        
-    // },
+    address: String,
+    subdistrict: String,
+    district: String,
+    province: String,
+    zipcode: String,
 
-    // rubberProducts: {
-
-    // }
+    products: [String]
 
 }, {
     timestamps: true,

@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+// const cookie = require('cookie-parser');
 
 
 require('dotenv').config();
@@ -16,6 +17,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true});
 app.use(cors({ origin: true,
     credentials: true}));
 app.use(express.json());
+
+// app.use(cookie());
 
 const connection = mongoose.connection;
 connection.once('open', () => {

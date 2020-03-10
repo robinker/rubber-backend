@@ -1,29 +1,37 @@
 const router = require('express').Router();
 let User = require('../models/user.model');
+let Garden = require('../models/garden.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 
 require('dotenv').config();
 
 router.route('/').get((req, res) => {
-    User.find({},'username role firstname lastname cert_1 friendlist')
+    User.find({},'-password')
         .then(users => res.json(users))
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
 router.route('/add').post(async (req, res) => {
-    user = await User.findOne({username: req.body.username})
+    user = await User.findOne({username: req.body.user.username})
     if(!user){
-        const hashedPassword = await bcrypt.hash(req.body.payload.password, 10);
-        const data = {
-            ...req.body.payload,
-            password: hashedPassword
+        const hashedPassword = await bcrypt.hash(req.body.user.password, 10);
+            const data = {
+                ...req.body.user,
+                password: hashedPassword,
+            }
+            const newUser = new User(data)
+        if(req.body.user.role === 'เกษตรกร'){
+            req.body.gardens.map(garden => {
+                const newGarden = new Garden(garden)
+                newGarden.save()
+                newUser.gardens.push(newGarden)
+            })
         }
-        const newUser = new User(data);
-        res.json(newUser)
         newUser.save()
         .then(() => {
-            res.json('User added!')
+            res.json({user: newUser})
+            // res.json('User added!')
         })
         .catch(err => res.status(400).json('Error: ' + err));
     } else {
@@ -33,8 +41,24 @@ router.route('/add').post(async (req, res) => {
 
 // get user
 router.route('/:id').get((req, res) => {
-    User.findById(req.params.id)
+    User.findById(req.params.id, '-password')
         .then(user => res.json(user))
+        .catch(err => res.status(400).json('Error: ' + err));
+});
+
+// get user and populate garden
+router.route('/:id/gardens').get((req, res) => {
+    User.findById(req.params.id)
+        .populate('gardens')
+        .then(user => res.json(user))
+        .catch(err => res.status(400).json('Error: ' + err));
+});
+
+// get garden
+router.route('/gardens/:id').get((req, res) => {
+    User.findById(req.params.id)
+        .populate('gardens')
+        .then(user => res.json(user.gardens))
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
@@ -68,6 +92,7 @@ router.route('/login').post(async (req, res) => {
         .then(user => {
             if(bcrypt.compareSync(req.body.password, user.password)){
                 const token = jwt.sign({username: user.username, role: user.role}, process.env.ACCESS_TOKEN_PRIVATE)
+
                 const payload = {
                     ...user._doc,
                     token
