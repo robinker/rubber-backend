@@ -26,9 +26,11 @@ connection.once('open', () => {
 })
 
 const usersRouter = require('./routes/users');
+const gardensRouter = require('./routes/gardens')
 const transactionsRouter = require('./routes/transactions');
 
 app.use('/users', usersRouter)
+app.use('/gardens', gardensRouter)
 app.use('/transactions', transactionsRouter)
 
 app.listen(port, () => {

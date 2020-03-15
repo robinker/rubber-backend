@@ -54,14 +54,6 @@ router.route('/:id/gardens').get((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
-// get garden
-router.route('/gardens/:id').get((req, res) => {
-    User.findById(req.params.id)
-        .populate('gardens')
-        .then(user => res.json(user.gardens))
-        .catch(err => res.status(400).json('Error: ' + err));
-});
-
 // delete user
 router.route('/:id').delete((req, res) => {
     User.findByIdAndDelete(req.params.id)
@@ -89,6 +81,7 @@ router.route('/update/:id').post((req, res) => {
 // login
 router.route('/login').post(async (req, res) => {
     User.findOne({username: req.body.username})
+        .populate('gardens')
         .then(user => {
             if(bcrypt.compareSync(req.body.password, user.password)){
                 const token = jwt.sign({username: user.username, role: user.role}, process.env.ACCESS_TOKEN_PRIVATE)
