@@ -47,18 +47,15 @@ router.route('/:id').get((req, res) => {
 });
 
 // get user and populate garden
-router.route('/:id/gardens').get((req, res) => {
-    User.findById(req.params.id)
+router.route('/:id/gardens').get(authToken, (req, res) => {
+    if(req.payload.role[0] === 'ผู้ดูแลระบบ'){
+        User.findById(req.params.id)
         .populate('gardens')
         .then(user => res.json(user))
         .catch(err => res.status(400).json('Error: ' + err));
-});
-
-// delete user
-router.route('/:id').delete((req, res) => {
-    User.findByIdAndDelete(req.params.id)
-        .then(() => res.json('User deleted'))
-        .catch(err => res.status(400).json('Error: ' + err));
+    } else {
+        res.sendStatus(401)
+    }
 });
 
 // update user
