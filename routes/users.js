@@ -47,7 +47,7 @@ router.route('/:id').get((req, res) => {
 });
 
 // get user and populate garden
-router.route('/:id/gardens').get(authToken, (req, res) => {
+router.route('/:id/gardens').get(authToken, (req, res) => { 
     if(req.payload.role[0] === 'ผู้ดูแลระบบ'){
         User.findById(req.params.id)
         .populate('gardens')
