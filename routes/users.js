@@ -30,8 +30,7 @@ router.route('/add').post(async (req, res) => {
         }
         newUser.save()
         .then(() => {
-            res.json({user: newUser})
-            // res.json('User added!')
+            res.json('User added!')
         })
         .catch(err => res.status(400).json('Error: ' + err));
     } else {
