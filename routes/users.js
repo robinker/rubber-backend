@@ -103,7 +103,7 @@ router.route('/addFriend/:id').post(authToken, async (req, res) => {
         if(!user.friendlist.includes(friendName)){
             user.friendlist.push(friendName)
             user.save()
-            res.json({message: "Friend Added", friends: user.friendlist})
+            res.json({message: "Friend Added", friends: user.friendlist, role: friend.role[0]})
         } else {
             res.json('Dupe')
         }
