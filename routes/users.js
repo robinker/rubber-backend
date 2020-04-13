@@ -81,10 +81,11 @@ router.route('/login').post(async (req, res) => {
         .then(user => {
             if(bcrypt.compareSync(req.body.password, user.password)){
                 const token = jwt.sign({username: user.username, role: user.role}, process.env.ACCESS_TOKEN_PRIVATE)
-
+                const {role, gardens, friendlist, _id, username, firstname, lastname, cert_1 } = user._doc
                 const payload = {
-                    ...user._doc,
-                    token
+                    username, role, _id,
+                    firstname, lastname, friendlist,
+                    gardens, cert_1, token
                 }
                 res.json({message:"Logged In", user: payload})
             } else {

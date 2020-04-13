@@ -6,41 +6,23 @@ let Block = require('../models/block.model');
 router.route('/add').post( async(req, res) => {
     const firstname = req.body.destination.split(' ')[0]
     const lastname = req.body.destination.split(' ')[1]
-    const firstname2 = req.body.source.name.split(' ')[0]
-    const lastname2 = req.body.source.name.split(' ')[1]
+    
     try {
-        // let user1 = await User.findOne({firstname: firstname2, lastname: lastname2})
-        let user2 = await User.findOne({firstname, lastname})
+        let user = await User.findOne({firstname, lastname})
         let transaction = {}
-        // if(user1.role[0] === 'เกษตรกร') {
-        //     transaction = {
-        //         source: {
-        //             name: req.body.source.name,
-        //             certification: req.body.source.certification
-        //         },
-        //         rubberType: req.body.rubberType,
-        //         volume: req.body.volume,
-        //         price: req.body.price,
-        //         destination: {
-        //             name: req.body.destination,
-        //             certification: user2.cert_1
-        //         },
-        //     }
-        // } else if(user1.role[0] === 'พ่อค้าคนกลาง') {
-            transaction = {
-                source: {
-                    name: req.body.destination,
-                    certification: user2.cert_1
-                },
-                rubberType: req.body.rubberType,
-                volume: req.body.volume,
-                price: req.body.price,
-                destination: {
-                    name: req.body.source.name,
-                    certification: req.body.source.certification
-                },
-            }
-        // }
+        transaction = {
+            source: {
+                name: req.body.destination,
+                certification: user.cert_1
+            },
+            rubberType: req.body.rubberType,
+            volume: req.body.volume,
+            price: req.body.price,
+            destination: {
+                name: req.body.source.name,
+                certification: req.body.source.certification
+            },
+        }
         const newTransaction = new Transaction(transaction)
         const lastState = newTransaction.destination.name
         const rubberType = newTransaction.rubberType
