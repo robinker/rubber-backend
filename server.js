@@ -28,10 +28,12 @@ connection.once('open', () => {
 const usersRouter = require('./routes/users');
 const gardensRouter = require('./routes/gardens')
 const transactionsRouter = require('./routes/transactions');
+const priceRouter = require('./routes/price')
 
 app.use('/users', usersRouter)
 app.use('/gardens', gardensRouter)
 app.use('/transactions', transactionsRouter)
+app.use('/price', priceRouter)
 
 app.listen(port, () => {
     console.log('Server is running on port: ', port)

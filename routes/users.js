@@ -57,22 +57,6 @@ router.route('/:id/gardens').get(authToken, (req, res) => {
     }
 });
 
-// update user
-router.route('/update/:id').post((req, res) => {
-    User.findById(req.params.id)
-        .then(user => {
-            user.username = req.body.username;
-            if(req.password !== ''){
-                user.password = bcrypt.hashSync(req.body.password, 10);
-            }
-            user.role = req.body.role;
-
-            user.save()
-                .then(() => res.json('User updated'))
-                .catch(err => res.status(400).json('Error: ' + err))
-        })
-        .catch(err => res.status(400).json('Error: ' + err));
-});
 
 // login
 router.route('/login').post(async (req, res) => {
