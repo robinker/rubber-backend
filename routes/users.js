@@ -65,11 +65,11 @@ router.route('/login').post(async (req, res) => {
         .then(user => {
             if(bcrypt.compareSync(req.body.password, user.password)){
                 const token = jwt.sign({username: user.username, role: user.role}, process.env.ACCESS_TOKEN_PRIVATE)
-                const { role, gardens, friendlist, _id, username, firstname, lastname, cert_1, address, district, subdistrict, zipcode, province } = user._doc
+                const { role, gardens, friendlist, _id, username, firstname, lastname, cert_1, address, district, subdistrict, zipcode, province, citizen_id } = user._doc
                 const payload = {
                     username, role, _id,
                     address, district, subdistrict,
-                    zipcode, province,
+                    zipcode, province,citizen_id,
                     firstname, lastname, friendlist,
                     gardens, cert_1, token
                 }
