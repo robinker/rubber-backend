@@ -11,7 +11,7 @@ router.route('/').get((req, res) => {
         .then(users => {
             users.map(user => {
                 for(i = 2; i <= 9; i++) {
-                    user.citizen_id = citizen_id.substring(0, i) + "x" + user.citizen_id.substring(i + 1)
+                    user.citizen_id =  user.citizen_id.substring(0, i) + "x" + user.citizen_id.substring(i + 1)
                 }
             })
             res.json(users)
