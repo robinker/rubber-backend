@@ -6,12 +6,16 @@ const jwt = require('jsonwebtoken')
 
 require('dotenv').config();
 
+function replaceAt (string, index, replace){
+    return string.substring(0, index) + replace + string.substring(index + 1)
+}
+
 router.route('/').get((req, res) => {
     User.find({},'-password')
         .then(users => {
             users.map(user => {
                 for(i = 2; i <= 9; i++) {
-                    user.citizen_id =  user.citizen_id.substring(0, i) + "x" + user.citizen_id.substring(i + 1)
+                    user.citizen_id = replaceAt(user.citizen_id, i, "x")
                 }
             })
             res.json(users)
@@ -57,7 +61,12 @@ router.route('/:id/gardens').get(authToken, (req, res) => {
     if(req.payload.role[0] === 'ผู้ดูแลระบบ'){
         User.findById(req.params.id)
         .populate('gardens')
-        .then(user => res.json(user))
+        .then(user => {
+            for(i = 2; i <= 9; i++) {
+                user.citizen_id = replaceAt(user.citizen_id, i, "x")
+            }
+            res.json(user)
+        })
         .catch(err => res.status(400).json('Error: ' + err));
     } else {
         res.sendStatus(401)
@@ -74,7 +83,7 @@ router.route('/login').post(async (req, res) => {
                 const token = jwt.sign({username: user.username, role: user.role}, process.env.ACCESS_TOKEN_PRIVATE)
                 let { role, gardens, friendlist, _id, username, firstname, lastname, cert_1, address, district, subdistrict, zipcode, province, citizen_id, email, tel } = user._doc
                 for(i = 2; i <= 9; i++) {
-                    citizen_id = citizen_id.substring(0, i) + "x" + citizen_id.substring(i + 1)
+                    citizen_id = replaceAt(citizen_id, i, "x")
                 }
                 const payload = {
                     username, role, _id, email,
