@@ -8,7 +8,14 @@ require('dotenv').config();
 
 router.route('/').get((req, res) => {
     User.find({},'-password')
-        .then(users => res.json(users))
+        .then(users => {
+            users.map(user => {
+                for(i = 2; i <= 9; i++) {
+                    user.citizen_id = citizen_id.substring(0, i) + "x" + user.citizen_id.substring(i + 1)
+                }
+            })
+            res.json(users)
+        })
         .catch(err => res.status(400).json('Error: ' + err));
 });
 
